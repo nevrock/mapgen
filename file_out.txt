@@ -1,0 +1,10 @@
+filepath: C:\Users\trave\Documents\mapgen\file_out
+seed: 251
+imageSize: 1024
+wavelength: 20
+gridSize: 50
+jitter: 0.5
+thresholdWater: 0.1
+riverCount: 25
+roadSize: 2
+riverFactor: 1
