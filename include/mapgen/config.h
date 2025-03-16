@@ -31,6 +31,7 @@ public:
     double jitter = 0.5;
     int imageSize = 1024;
     int seed = 251;
+    double borderLength = 1.0;
 
     // noises
     NoiseConfig noiseIsland;
@@ -43,7 +44,7 @@ public:
 
     // colors
     glm::vec3 riverColor = glm::vec3(94, 182, 223);
-    glm::vec3 roadColor = glm::vec3(238, 214, 175);
+    glm::vec3 roadColor = glm::vec3(0, 0, 0);
 
     glm::vec3 ocean = glm::vec3(94, 182, 223);
     glm::vec3 lake = glm::vec3(94, 182, 223);

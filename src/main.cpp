@@ -20,7 +20,9 @@ void GenerateMap(
         double thresholdWater = 0.3,
         int riverCount = 25,
         int roadSize = 2,
-        int riverFactor = 1
+        int riverFactor = 1,
+
+        double borderLength = 1.0
     ) {
 
     // Create a Config object
@@ -38,6 +40,7 @@ void GenerateMap(
     config.riverCount = riverCount;
     config.roadSize = roadSize;
     config.riverFactor = riverFactor;
+    config.borderLength = borderLength;
 
     std::ofstream outputFile(std::string(filepath) + ".txt"); 
 
@@ -52,6 +55,7 @@ void GenerateMap(
         outputFile << "riverCount: " << config.riverCount << std::endl;
         outputFile << "roadSize: " << config.roadSize << std::endl;
         outputFile << "riverFactor: " << config.riverFactor << std::endl;
+        outputFile << "borderLength: " << config.borderLength << std::endl;
 
         outputFile.close(); 
     } else {
@@ -76,6 +80,7 @@ int main(int argc, char* argv[]) {
     int gridSize = 50;
     double jitter = 0.5;
     double thresholdWater = 0.3; 
+    double borderFactor = 1.0; 
     int riverCount = 25;
     int roadSize = 2;
     int riverFactor = 1;
@@ -108,7 +113,9 @@ int main(int argc, char* argv[]) {
                 roadSize = std::stoi(argValue);
             } else if (argName == "riverFactor") {
                 riverFactor = std::stoi(argValue);
-            } else {
+            } else if (argName == "borderLength") {
+                borderFactor = std::stod(argValue);
+            }else {
                 std::cerr << "Unknown argument: " << argName << std::endl;
             }
         } else {
@@ -118,7 +125,7 @@ int main(int argc, char* argv[]) {
 
     // Now call GenerateMap with the potentially modified values
     GenerateMap(filepath.c_str(), seed, imageSize, wavelength, gridSize, jitter, 
-                thresholdWater, riverCount, roadSize, riverFactor);
+                thresholdWater, riverCount, roadSize, riverFactor, borderFactor);
 
     return 0;
 }

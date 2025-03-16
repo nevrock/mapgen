@@ -13,7 +13,8 @@
 #include <delaunator/delaunator.hpp>
 
 #include <mapgen/data.h>
-#include <mapgen/drawer.h>
+#include <mapgen/drawer_biomes.h>
+#include <mapgen/drawer_elevation.h>
 #include <mapgen/config.h>
 
 #include <mapgen/pass_water.h>
@@ -82,7 +83,10 @@ public:
         }
     }
     void saveToPNG(const char* filename) {
-        MapDrawer::saveToPNG(filename, 
+        MapDrawerBiomes::saveToPNG(filename, 
+            config_.gridSize, config_.imageSize,
+            centers, &config_);
+        MapDrawerElevation::saveToPNG(filename, 
             config_.gridSize, config_.imageSize,
             centers, &config_);
     }
@@ -165,13 +169,41 @@ private:
         });
     }
     void borderCheck() {
+        // Calculate squared border distance for efficiency
+        double borderDistanceSquared = config_.borderLength * config_.borderLength; 
+
         for (const auto& center : centers) {
             for (const auto& corner : center->corners) {
-                if (corner->point.x < 0 || corner->point.x > config_.gridSize ||
-                    corner->point.y < 0 || corner->point.y > config_.gridSize) {
+                // Check if corner is outside the map area plus the border
+                if (corner->point.x < -config_.borderLength || 
+                    corner->point.x > config_.gridSize + config_.borderLength ||
+                    corner->point.y < -config_.borderLength || 
+                    corner->point.y > config_.gridSize + config_.borderLength) {
+
                     corner->border = true;
                     center->border = true;
-                    break;
+                    break; 
+                }
+
+                // Check distance from map edges
+                if (corner->point.x < config_.borderLength || 
+                    corner->point.x > config_.gridSize - config_.borderLength ||
+                    corner->point.y < config_.borderLength || 
+                    corner->point.y > config_.gridSize - config_.borderLength) {
+
+                    // Calculate squared distance to the closest edge
+                    double minDistanceSquared = std::min(
+                        std::min(corner->point.x * corner->point.x, 
+                                 (config_.gridSize - corner->point.x) * (config_.gridSize - corner->point.x)),
+                        std::min(corner->point.y * corner->point.y, 
+                                 (config_.gridSize - corner->point.y) * (config_.gridSize - corner->point.y))
+                    );
+
+                    if (minDistanceSquared <= borderDistanceSquared) {
+                        corner->border = true;
+                        center->border = true;
+                        break;
+                    }
                 }
             }
         }
